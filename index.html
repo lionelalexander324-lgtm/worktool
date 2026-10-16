@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>SVGA 缩略图工坊</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#workspace">跳到工作区</a>
+  <header class="hero">
+    <div class="hero__mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v5h5M9 12l2 2 4-4M9 17h6"/></svg>
+    </div>
+    <div>
+      <p class="eyebrow">LOCAL · PRIVATE · TRANSPARENT</p>
+      <h1>SVGA 缩略图工坊</h1>
+      <p>上传动画，自动推荐最佳画面，微调后导出透明 PNG。文件仅在当前浏览器中处理。</p>
+    </div>
+    <div class="hero__privacy">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.7 2.9 8.1 7 10 4.1-1.9 7-5.3 7-10V6z"/><path d="m9 12 2 2 4-4"/></svg>
+      本地处理，不上传文件
+    </div>
+  </header>
+
+  <main id="workspace" class="workspace">
+    <section class="panel controls" aria-labelledby="controls-title">
+      <div class="panel__heading">
+        <div><span class="step">01</span><h2 id="controls-title">导入与调整</h2></div>
+        <span id="fileState" class="state-chip">等待文件</span>
+      </div>
+
+      <label id="dropZone" class="drop-zone" for="fileInput">
+        <input id="fileInput" type="file" accept=".svga,application/octet-stream">
+        <span class="drop-zone__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5 5 5M5 14v5h14v-5"/></svg>
+        </span>
+        <strong>选择或拖入 SVGA 文件</strong>
+        <span>支持静态与动态 SVGA，建议单个文件不超过 50 MB</span>
+      </label>
+
+      <div id="status" class="status" role="status" aria-live="polite">
+        <span class="status__dot"></span><span>准备就绪</span>
+      </div>
+
+      <section class="control-section" aria-labelledby="file-info-title">
+        <div class="section-title">
+          <h3 id="file-info-title">文件信息</h3>
+          <span id="formatBadge" class="mini-badge">未载入</span>
+        </div>
+        <dl class="file-grid">
+          <div class="file-grid__wide"><dt>文件名</dt><dd id="infoName">—</dd></div>
+          <div><dt>原始尺寸</dt><dd id="infoSize">—</dd></div>
+          <div><dt>总帧数</dt><dd id="infoFrames">—</dd></div>
+          <div><dt>帧率</dt><dd id="infoFps">—</dd></div>
+          <div><dt>总时长</dt><dd id="infoDuration">—</dd></div>
+        </dl>
+      </section>
+
+      <section class="control-section is-disabled" id="frameSection" aria-labelledby="frame-title">
+        <div class="section-title">
+          <h3 id="frame-title">选择画面</h3>
+          <button id="restoreFrame" class="text-button" type="button" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v6h6M5.5 15a7 7 0 1 0 .7-7.8L4 10"/></svg>
+            恢复推荐帧
+          </button>
+        </div>
+        <div class="recommendation">
+          <span class="recommendation__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="m12 3 1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6zM18 15l.8 2.2L21 18l-2.2.8L18 21l-.8-2.2L15 18l2.2-.8z"/></svg>
+          </span>
+          <div><strong id="recommendTitle">等待分析</strong><span id="recommendText">上传后自动推荐主体完整的一帧</span></div>
+        </div>
+        <div class="range-head"><label for="frameSlider">当前帧</label><output id="frameOutput">0 / 0</output></div>
+        <input id="frameSlider" class="range" type="range" min="0" max="0" value="0" disabled>
+        <div class="transport" role="group" aria-label="动画播放控制">
+          <button id="prevFrame" class="icon-button" type="button" aria-label="上一帧" disabled>
+            <svg viewBox="0 0 24 24"><path d="M7 5v14M18 6l-8 6 8 6z"/></svg>
+          </button>
+          <button id="playPause" class="play-button" type="button" disabled>
+            <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 9 6-9 6z"/></svg>
+            <svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6v12M16 6v12"/></svg>
+            <span>播放</span>
+          </button>
+          <button id="nextFrame" class="icon-button" type="button" aria-label="下一帧" disabled>
+            <svg viewBox="0 0 24 24"><path d="M17 5v14M6 6l8 6-8 6z"/></svg>
+          </button>
+          <button id="useFrame" class="secondary-button transport__confirm" type="button" disabled>设为缩略图当前帧</button>
+        </div>
+      </section>
+
+      <section class="control-section is-disabled" id="layoutSection" aria-labelledby="layout-title">
+        <div class="section-title"><h3 id="layout-title">画布与构图</h3></div>
+        <label class="field" for="sizeSelect"><span>输出尺寸</span>
+          <select id="sizeSelect" disabled>
+            <option value="original">原始尺寸</option>
+            <option value="512">512 × 512</option>
+            <option value="600">600 × 600</option>
+            <option value="800">800 × 800</option>
+            <option value="1024">1024 × 1024</option>
+          </select>
+        </label>
+        <div class="range-head"><label for="scaleSlider">内容比例</label><output id="scaleOutput">100%</output></div>
+        <input id="scaleSlider" class="range" type="range" min="25" max="200" value="100" disabled>
+        <div class="preset-row" aria-label="常用内容比例">
+          <button type="button" data-scale="70" disabled>70%</button><button type="button" data-scale="80" disabled>80%</button>
+          <button type="button" data-scale="90" disabled>90%</button><button type="button" data-scale="100" disabled>100%</button>
+        </div>
+        <div class="position-grid">
+          <label class="field" for="offsetX"><span>水平位置</span><span class="number-wrap"><input id="offsetX" type="number" value="0" step="1" disabled><i>px</i></span></label>
+          <label class="field" for="offsetY"><span>垂直位置</span><span class="number-wrap"><input id="offsetY" type="number" value="0" step="1" disabled><i>px</i></span></label>
+        </div>
+        <div class="action-grid">
+          <button id="centerContent" class="secondary-button" type="button" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18M5 8V5h3m8 0h3v3m0 8v3h-3M8 19H5v-3"/></svg>一键居中
+          </button>
+          <button id="autoFit" class="secondary-button" type="button" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5m6 0h5v5m0 6v5h-5M9 20H4v-5M8 8l8 8m0-8-8 8"/></svg>自动适配
+          </button>
+          <button id="resetLayout" class="secondary-button action-grid__wide" type="button" disabled>恢复默认比例与位置</button>
+        </div>
+      </section>
+
+      <section class="control-section export-section is-disabled" id="exportSection" aria-labelledby="export-title">
+        <div class="section-title"><h3 id="export-title">导出</h3><span class="alpha-label">Alpha 透明通道</span></div>
+        <label class="field" for="fileName"><span>文件名</span><input id="fileName" type="text" value="thumbnail.png" disabled></label>
+        <button id="exportButton" class="primary-button" type="button" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
+          导出透明 PNG
+        </button>
+      </section>
+    </section>
+
+    <section class="panel preview" aria-labelledby="preview-title">
+      <div class="panel__heading preview__heading">
+        <div><span class="step">02</span><h2 id="preview-title">缩略图预览</h2></div>
+        <div class="preview-tools">
+          <button id="toggleGrid" class="tool-button is-active" type="button" aria-pressed="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM4 12h16M12 4v16"/></svg>棋盘格
+          </button>
+          <button id="detailView" class="tool-button" type="button" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4M11 8v6M8 11h6"/></svg>1:1 细节
+          </button>
+        </div>
+      </div>
+
+      <div id="previewStage" class="preview-stage checkerboard">
+        <div id="emptyPreview" class="empty-preview">
+          <span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 15l3-3 2 2 3-4 2 3M9 8h.01"/></svg></span>
+          <strong>缩略图会显示在这里</strong>
+          <p>先在左侧上传一个 SVGA 文件</p>
+        </div>
+        <div id="canvasWrap" class="canvas-wrap" hidden>
+          <canvas id="outputCanvas" aria-label="当前 SVGA 缩略图预览"></canvas>
+        </div>
+        <div id="loadingOverlay" class="loading-overlay" hidden>
+          <span class="spinner" aria-hidden="true"></span><strong>正在解析 SVGA</strong><span id="loadingText">读取动画结构…</span>
+        </div>
+      </div>
+
+      <div class="preview-meta">
+        <div><span>输出尺寸</span><strong id="previewSize">—</strong></div>
+        <div><span>缩略图帧</span><strong id="previewFrame">—</strong></div>
+        <div><span>选择模式</span><strong id="previewMode">—</strong></div>
+        <div><span>透明背景</span><strong class="success-text">已开启</strong></div>
+      </div>
+
+      <aside class="tip">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 22h4M8.2 14.5A6 6 0 1 1 15.8 14.5C14.7 15.4 14 16.4 14 18h-4c0-1.6-.7-2.6-1.8-3.5Z"/></svg>
+        <div><strong>关于透明背景</strong><p>棋盘格只用于预览透明区域，不会写入导出的 PNG 文件。</p></div>
+      </aside>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <div id="rendererHost" class="renderer-host" aria-hidden="true"></div>
+
+  <script src="vendor/jszip.min.js"></script>
+  <script src="vendor/jszip-utils.min.js"></script>
+  <script src="vendor/svga.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "SVGA 缩略图工坊",
+  "route": "B",
+  "language": "zh-CN",
+  "renderTarget": "responsive desktop web, Windows Chrome first",
+  "sourceSummary": "Upload static or animated SVGA, recommend or choose a frame, adjust composition, and export transparent PNG.",
+  "visualAssets": [],
+  "dependencies": [
+    "vendor/svga.min.js",
+    "vendor/jszip.min.js",
+    "vendor/jszip-utils.min.js"
+  ],
+  "privacy": "All file parsing and rendering happens locally in the browser.",
+  "publishReady": false
+}
